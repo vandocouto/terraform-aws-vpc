@@ -1,6 +1,12 @@
+# Creating a VPC with Nat Gateway AWS
+
+### Project clone
+
 <pre>
 $ git clone https://github.com/vandocouto/terraform-aws-vpc.git
 </pre>
+
+### Accessing the project
 
 <pre>
 $ cd terraform-aws-vpc/
