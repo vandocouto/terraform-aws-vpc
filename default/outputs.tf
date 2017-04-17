@@ -7,7 +7,7 @@ output "public_subnets" {
 }
 
 output "vpc_id" {
-  value = "${aws_vpc.mod.id}"
+  value = "${aws_vpc.VPC.id}"
 }
 
 output "nat_eips_id" {
@@ -23,5 +23,5 @@ output "natgw_ids" {
 }
 
 output "igw_id" {
-  value = "${aws_internet_gateway.mod.id}"
+  value = "${aws_internet_gateway.IG.id}"
 }
