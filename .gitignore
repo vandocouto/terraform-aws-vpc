@@ -1,5 +1,5 @@
 terraform.tfvars
 terraform.tfstate
 terraform.tfstate.backup
-.terraform.tfstate.lock.info
+default/.terraform.tfstate.lock.info
 deploy.sh

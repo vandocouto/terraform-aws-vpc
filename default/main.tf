@@ -1,7 +1,7 @@
 
 // Create VPC
 
-resource "aws_vpc" "mod" {
+resource "aws_vpc" "VPC" {
   cidr_block           = "${var.cidr}"
   enable_dns_hostnames = "${var.enable_dns_hostnames}"
   enable_dns_support   = "${var.enable_dns_support}"
@@ -10,13 +10,13 @@ resource "aws_vpc" "mod" {
 
 // # Public Subnet Configure
 
-resource "aws_internet_gateway" "mod" {
-  vpc_id              = "${aws_vpc.mod.id}"
+resource "aws_internet_gateway" "IG" {
+  vpc_id              = "${aws_vpc.VPC.id}"
   tags                = "${merge(var.tags, map("Name", format("%s-igw", var.name)))}"
 }
 
 resource "aws_route_table" "public" {
-  vpc_id              = "${aws_vpc.mod.id}"
+  vpc_id              = "${aws_vpc.VPC.id}"
   propagating_vgws    = ["${var.public_propagating_vgws}"]
   tags                = "${merge(var.tags, map("Name", format("%s-rt-public", var.name)))}"
 }
@@ -24,11 +24,11 @@ resource "aws_route_table" "public" {
 resource "aws_route" "public_internet_gateway" {
   route_table_id         = "${aws_route_table.public.id}"
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = "${aws_internet_gateway.mod.id}"
+  gateway_id             = "${aws_internet_gateway.IG.id}"
 }
 
 resource "aws_subnet" "public" {
-  vpc_id                  = "${aws_vpc.mod.id}"
+  vpc_id                  = "${aws_vpc.VPC.id}"
   cidr_block              = "${var.public_subnets[count.index]}"
   availability_zone       = "${element(var.azs, count.index)}"
   count                   = "${length(var.public_subnets)}"
@@ -46,25 +46,25 @@ resource "aws_route_table_association" "public" {
 // # Private Subnet Configure
 
 resource "aws_eip" "ipwan" {
-  	depends_on            = ["aws_internet_gateway.mod"]
+  	depends_on            = ["aws_internet_gateway.IG"]
   	vpc                   = true
 }
 
 resource "aws_nat_gateway" "GW" {
   allocation_id     = "${element(aws_eip.ipwan.*.id, count.index)}"
   subnet_id         = "${element(aws_subnet.public.*.id, count.index)}"
-  depends_on        = ["aws_internet_gateway.mod"]
+  depends_on        = ["aws_internet_gateway.IG"]
 }
 
 resource "aws_route_table" "private" {
-  vpc_id           = "${aws_vpc.mod.id}"
+  vpc_id           = "${aws_vpc.VPC.id}"
   propagating_vgws = ["${var.private_propagating_vgws}"]
   count            = "${length(var.private_subnets)}"
   tags             = "${merge(var.tags, map("Name", format("%s-rt-private-%s", var.name, element(var.azs, count.index))))}"
 }
 
 resource "aws_subnet" "private" {
-  vpc_id            = "${aws_vpc.mod.id}"
+  vpc_id            = "${aws_vpc.VPC.id}"
   cidr_block        = "${var.private_subnets[count.index]}"
   availability_zone = "${element(var.azs, count.index)}"
   count             = "${length(var.private_subnets)}"
