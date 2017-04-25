@@ -29,7 +29,8 @@ fi
 # Access Key and Secret Key Report
 export AWS_ACCESS_KEY_ID=""
 export AWS_SECRET_ACCESS_KEY=""
-export AWS_DEFAULT_REGION="us-west-1"
+# Configure region
+export AWS_DEFAULT_REGION=""
 
 cd $1
 terraform $2
